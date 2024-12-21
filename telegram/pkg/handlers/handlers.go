@@ -21,8 +21,8 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		})
 		return
 	}
-	if len(oncallUsers) > 2 {
-		oncallUsers = oncallUsers[1:]
+	if len(oncallUsers) > 27 {
+		oncallUsers = oncallUsers[27:]
 	}
 	oncallUsersList := strings.Split(oncallUsers, ",")
 	oncallUsersListLinebreak := strings.Join(oncallUsersList, "\n")
