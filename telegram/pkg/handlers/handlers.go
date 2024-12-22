@@ -21,8 +21,11 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		})
 		return
 	}
-	if len(oncallUsers) > 27 {
-		oncallUsers = oncallUsers[27:]
+
+	fmt.Printf("%s", oncallUsers)
+
+	if len(oncallUsers) > 30 {
+		oncallUsers = oncallUsers[30:]
 	}
 	oncallUsersList := strings.Split(oncallUsers, ",")
 	oncallUsersListLinebreak := strings.Join(oncallUsersList, "\n")
@@ -44,10 +47,17 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		discordInviteLink,
 	)
 
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   "📞",
-	})
+	if oncallUsersCount == 0 {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "🤬",
+		})
+	} else {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "📞",
+		})
+	}
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:             update.Message.Chat.ID,

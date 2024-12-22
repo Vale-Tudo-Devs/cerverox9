@@ -206,7 +206,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 		}
 		oncallUsersCount := 0
 		oncallUsers := []string{}
-		oncallUsers = append(oncallUsers, "Discord Vazio - Ruas cheias")
+		oncallUsers = append(oncallUsers, "Empty Discord, crowded streets")
 		for _, member := range members {
 			if member.User.Bot {
 				continue
@@ -240,7 +240,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 			}
 		}
 		if len(onlineUsers) == 0 {
-			onlineUsers = append(onlineUsers, "Ruas Vazias - Discord Cheio")
+			onlineUsers = append(onlineUsers, "No one is just a click away from having fun")
 		}
 		err = dm.logUsersCount(OnlineUsersMeasurement, guildID, onlineUsersCount, onlineUsers)
 		if err != nil {
