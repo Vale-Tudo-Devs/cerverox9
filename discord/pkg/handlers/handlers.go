@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"log"
+	"os"
+	"slices"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/vcaldo/cerverox9/discord/pkg/models"
@@ -9,6 +12,10 @@ import (
 
 func VoiceStateUpdate(s *discordgo.Session, vsu *discordgo.VoiceStateUpdate) {
 	dm := models.NewAuthenticatedDiscordMetricsClient()
+	ignoredUsers := strings.Split(os.Getenv("DISCORD_IGNORED_USERNAMES"), ",")
+	if slices.Contains(ignoredUsers, vsu.Member.User.Username) {
+		return
+	}
 	switch {
 	// User joined a voice channel
 	case vsu.BeforeUpdate == nil && vsu.ChannelID != "":
