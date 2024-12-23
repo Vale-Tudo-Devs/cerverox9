@@ -100,7 +100,7 @@ func (dm *DiscordMetrics) LogVoiceEvent(s *discordgo.Session, vsu *discordgo.Voi
 		return fmt.Errorf("error fetching channel: %v", err)
 	}
 
-	dm.logVoiceEvent(vsu.UserID, user.Username, user.Username, vsu.GuildID, channelID, channel.Name, voiceEvent, state)
+	dm.logVoiceEvent(vsu.UserID, user.Username, utils.UserDisplayName(vsu.Member), vsu.GuildID, channelID, channel.Name, voiceEvent, state)
 	return nil
 }
 
