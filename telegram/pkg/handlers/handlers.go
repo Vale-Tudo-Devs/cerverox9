@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	discord_models "github.com/vcaldo/cerverox9/discord/pkg/models"
 	"github.com/vcaldo/cerverox9/telegram/pkg/stats"
 )
 
@@ -22,7 +23,7 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		return
 	}
 
-	lenEmptyMessage := len(models.emptyDiscord)
+	lenEmptyMessage := len(discord_models.EmptyDiscord)
 	if len(oncallUsers) > lenEmptyMessage {
 		oncallUsers = oncallUsers[lenEmptyMessage:]
 	}

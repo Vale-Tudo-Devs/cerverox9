@@ -30,7 +30,7 @@ const (
 	DeafenEvent            = "deafen"
 	WebcamEvent            = "webcam"
 	StreamEvent            = "streaming"
-	emptyDiscord           = "Empty Discord - crowded streets"
+	EmptyDiscord           = "Empty Discord - crowded streets"
 )
 
 type DiscordMetrics struct {
