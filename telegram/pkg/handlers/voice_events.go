@@ -96,7 +96,6 @@ func (l *VoiceEventListener) checkNewEvents() ([]VoiceEvent, error) {
 		record := result.Record()
 		values := record.Values()
 
-		log.Printf("Record: %+v", values)
 		// Safe value extraction
 		userID, ok1 := values["user_id"].(string)
 		username, ok2 := values["username"].(string)
