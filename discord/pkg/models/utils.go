@@ -1,10 +1,10 @@
-package utils
+package models
 
 import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func UserDisplayName(m *discordgo.Member) string {
+func userDisplayName(m *discordgo.Member) string {
 	switch {
 	case m.Nick != "":
 		return m.Nick
