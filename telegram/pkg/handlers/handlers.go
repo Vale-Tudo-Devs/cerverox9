@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	discord_models "github.com/vcaldo/cerverox9/discord/pkg/models"
 	"github.com/vcaldo/cerverox9/telegram/pkg/stats"
 )
 
@@ -20,6 +21,11 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 			Text:   "Error fetching voice call status",
 		})
 		return
+	}
+
+	lenEmptyMessage := len(discord_models.EmptyDiscord)
+	if len(oncallUsers) > lenEmptyMessage {
+		oncallUsers = oncallUsers[lenEmptyMessage:]
 	}
 	oncallUsersList := strings.Split(oncallUsers, ",")
 	oncallUsersListLinebreak := strings.Join(oncallUsersList, "\n")
@@ -41,10 +47,17 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		discordInviteLink,
 	)
 
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   "📞",
-	})
+	if oncallUsersCount == 0 {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "🤬",
+		})
+	} else {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "📞",
+		})
+	}
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:             update.Message.Chat.ID,

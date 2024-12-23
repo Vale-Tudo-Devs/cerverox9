@@ -30,6 +30,7 @@ const (
 	DeafenEvent            = "deafen"
 	WebcamEvent            = "webcam"
 	StreamEvent            = "streaming"
+	EmptyDiscord           = "Empty Discord - crowded streets"
 )
 
 type DiscordMetrics struct {
@@ -212,6 +213,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 		}
 		oncallUsersCount := 0
 		oncallUsers := []string{}
+		oncallUsers = append(oncallUsers, EmptyDiscord)
 		for _, member := range members {
 			if member.User.Bot {
 				continue
@@ -244,7 +246,9 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 				}
 			}
 		}
-
+		if len(onlineUsers) == 0 {
+			onlineUsers = append(onlineUsers, "No one is just a click away from having fun")
+		}
 		err = dm.logUsersCount(OnlineUsersMeasurement, guildID, onlineUsersCount, onlineUsers)
 		if err != nil {
 			return fmt.Errorf("error logging online users: %v", err)
