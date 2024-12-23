@@ -22,8 +22,9 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		return
 	}
 
-	if len(oncallUsers) > 31 {
-		oncallUsers = oncallUsers[31:]
+	lenEmptyMessage := len(models.emptyDiscord)
+	if len(oncallUsers) > lenEmptyMessage {
+		oncallUsers = oncallUsers[lenEmptyMessage:]
 	}
 	oncallUsersList := strings.Split(oncallUsers, ",")
 	oncallUsersListLinebreak := strings.Join(oncallUsersList, "\n")

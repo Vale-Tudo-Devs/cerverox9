@@ -30,6 +30,7 @@ const (
 	DeafenEvent            = "deafen"
 	WebcamEvent            = "webcam"
 	StreamEvent            = "streaming"
+	emptyDiscord           = "Empty Discord - crowded streets"
 )
 
 type DiscordMetrics struct {
@@ -206,7 +207,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 		}
 		oncallUsersCount := 0
 		oncallUsers := []string{}
-		oncallUsers = append(oncallUsers, "Empty Discord - crowded streets")
+		oncallUsers = append(oncallUsers, emptyDiscord)
 		for _, member := range members {
 			if member.User.Bot {
 				continue
