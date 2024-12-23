@@ -175,6 +175,10 @@ func (dm *DiscordMetrics) GetOnlineUsers(guildID string) (int64, string, error) 
 	for result.Next() {
 		record := result.Record()
 		onlineUsersCount := record.Value().(int64)
+		if onlineUsersCount == 0 {
+			onlineUsers := "No one is just a click away from having fun" // This can't have a comma
+			return onlineUsersCount, onlineUsers, nil
+		}
 		onlineUsers := record.Values()["user_list"].(string)
 		return onlineUsersCount, onlineUsers, nil
 	}
@@ -213,7 +217,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 		}
 		oncallUsersCount := 0
 		oncallUsers := []string{}
-		oncallUsers = append(oncallUsers, EmptyDiscord)
+		// oncallUsers = append(oncallUsers, EmptyDiscord)
 		for _, member := range members {
 			if member.User.Bot {
 				continue
@@ -246,9 +250,9 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 				}
 			}
 		}
-		if len(onlineUsers) == 0 {
-			onlineUsers = append(onlineUsers, "No one is just a click away from having fun")
-		}
+		// if len(onlineUsers) == 0 {
+		// 	onlineUsers = append(onlineUsers, "No one is just a click away from having fun")
+		// }
 		err = dm.logUsersCount(OnlineUsersMeasurement, guildID, onlineUsersCount, onlineUsers)
 		if err != nil {
 			return fmt.Errorf("error logging online users: %v", err)
