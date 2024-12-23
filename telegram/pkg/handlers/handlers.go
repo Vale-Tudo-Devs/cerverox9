@@ -42,9 +42,9 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		discordInviteLink,
 	)
 
-	emojiMessage := "📞"
+	emojiMessage := "🤙"
 	if oncallUsersCount == 0 {
-		emojiMessage = "🤬"
+		emojiMessage = "🫥"
 	}
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
@@ -74,23 +74,23 @@ func VoiceEventHanlder(ctx context.Context, b *bot.Bot, event *VoiceEvent) {
 	case event.EventType == "voice" && event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s joined the call", event.UserGlobalName),
+			Text:   fmt.Sprintf("%s joined the call in %s", event.UserGlobalName, event.ChannelName),
 		})
 	// User left the voice channel
 	case event.EventType == "voice" && !event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s left the call", event.UserGlobalName),
+			Text:   fmt.Sprintf("%s left the call in %s", event.UserGlobalName, event.ChannelName),
 		})
 	case event.EventType == "webcam" && event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s opened the webcam 📸", event.UserGlobalName),
+			Text:   fmt.Sprintf("%s opened the webcam 📸 in %s", event.UserGlobalName, event.ChannelName),
 		})
 	case event.EventType == "streaming" && event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s started streaming 📺", event.UserGlobalName),
+			Text:   fmt.Sprintf("%s started streaming 📺 in %s", event.UserGlobalName, event.ChannelName),
 		})
 	}
 }
