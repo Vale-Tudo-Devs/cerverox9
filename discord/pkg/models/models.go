@@ -19,7 +19,7 @@ const (
 	OnlineUsersMeasurement = "online_users"
 	UserIdKey              = "user_id"
 	UsernameKey            = "username"
-	UserDisplayName        = "user_display_name"
+	UserDisplayNameKey     = "user_display_name"
 	GuildIdKey             = "guild_id"
 	ChannelIdKey           = "channel_id"
 	ChannelNameKey         = "channel_name"
@@ -103,24 +103,24 @@ func (dm *DiscordMetrics) LogVoiceEvent(s *discordgo.Session, vsu *discordgo.Voi
 	return nil
 }
 
-func (dm *DiscordMetrics) logVoiceEvent(userID, username, UserDisplayName, guildID, channelID, channelName, eventType string, state bool) error {
+func (dm *DiscordMetrics) logVoiceEvent(userID, username, userDisplayName, guildID, channelID, channelName, eventType string, state bool) error {
 	writeAPI := dm.Client.WriteAPIBlocking(dm.Org, dm.Bucket)
 
 	p := influxdb2.NewPoint(VoiceEventsMeasurement,
 		map[string]string{
-			UserIdKey:       userID,
-			UsernameKey:     username,
-			UserDisplayName: UserDisplayName,
-			GuildIdKey:      guildID,
-			ChannelIdKey:    channelID,
-			ChannelNameKey:  channelName,
-			EventTypeKey:    eventType,
+			UserIdKey:          userID,
+			UsernameKey:        username,
+			UserDisplayNameKey: userDisplayName,
+			GuildIdKey:         guildID,
+			ChannelIdKey:       channelID,
+			ChannelNameKey:     channelName,
+			EventTypeKey:       eventType,
 		},
 		map[string]interface{}{
 			StateKey: state,
 		},
 		time.Now())
-	log.Printf("Writing point: %s, %s, %t in %s measurement", username, eventType, state, VoiceEventsMeasurement)
+	log.Printf("Writing point: %s, %s, %s, %t in %s measurement", username, userDisplayName, eventType, state, VoiceEventsMeasurement)
 
 	return writeAPI.WritePoint(context.Background(), p)
 }
