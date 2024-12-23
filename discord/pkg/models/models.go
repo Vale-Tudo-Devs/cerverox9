@@ -120,7 +120,8 @@ func (dm *DiscordMetrics) logVoiceEvent(userID, username, UserDisplayName, guild
 			StateKey: state,
 		},
 		time.Now())
-	log.Printf("Writing point: %s, %s, %t in %s measurement", username, eventType, state, VoiceEventsMeasurement)
+	log.Printf("%+v")
+	log.Printf("Writing point: %s, %s, %s, %t in %s measurement", username, UserDisplayName, eventType, state, VoiceEventsMeasurement)
 
 	return writeAPI.WritePoint(context.Background(), p)
 }
