@@ -147,6 +147,10 @@ func (dm *DiscordMetrics) GetOncallUsers(guildID string) (int64, string, error) 
 	for result.Next() {
 		record := result.Record()
 		oncallUsersCount := record.Value().(int64)
+		if oncallUsersCount == 0 {
+			oncallUsers := "No one is just a click away from having fun" // This can't have a comma
+			return oncallUsersCount, oncallUsers, nil
+		}
 		oncallUsers := record.Values()["user_list"].(string)
 		return oncallUsersCount, oncallUsers, nil
 	}
