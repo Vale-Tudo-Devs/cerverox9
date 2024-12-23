@@ -45,8 +45,8 @@ func main() {
 	dm := models.NewAuthenticatedDiscordMetricsClient()
 	go dm.LogUsersPresence(dg)
 
-	// Update user presence every 10 seconds
-	ticker := time.NewTicker(10 * time.Second)
+	// Update user presence every 30 seconds
+	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 	go func() {
 		for {
