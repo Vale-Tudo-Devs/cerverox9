@@ -106,7 +106,7 @@ func (l *VoiceEventListener) checkNewEvents() ([]VoiceEvent, error) {
 		state, ok5 := record.Value().(bool)
 
 		// Skip if required fields are missing
-		if !ok1 || !ok2 || !ok3 || !ok4 || !ok5 || ok6 {
+		if !ok1 || !ok2 || !ok3 || !ok4 || !ok5 || !ok6 {
 			log.Printf("Skipping record with missing fields: %+v", values)
 			continue
 		}
