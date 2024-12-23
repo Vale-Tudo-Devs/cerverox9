@@ -120,7 +120,6 @@ func (l *VoiceEventListener) checkNewEvents() ([]VoiceEvent, error) {
 			State:          state,
 		}
 		events = append(events, event)
-		log.Printf("Event: %+v", event)
 	}
 
 	if err := result.Err(); err != nil {
