@@ -30,7 +30,6 @@ const (
 	DeafenEvent            = "deafen"
 	WebcamEvent            = "webcam"
 	StreamEvent            = "streaming"
-	EmptyDiscord           = "Empty Discord - crowded streets"
 )
 
 type DiscordMetrics struct {
@@ -147,10 +146,15 @@ func (dm *DiscordMetrics) GetOncallUsers(guildID string) (int64, string, error) 
 	for result.Next() {
 		record := result.Record()
 		oncallUsersCount := record.Value().(int64)
-		oncallUsers := record.Values()["user_list"].(string)
-		return oncallUsersCount, oncallUsers, nil
+		var oncallUsers string
+		if oncallUsersCount == 0 {
+			oncallUsers = "Empty Discord. Crowded streets." // This can't have a comma
+			return oncallUsersCount, oncallUsers, nil
+		} else {
+			oncallUsers = record.Values()["user_list"].(string)
+			return oncallUsersCount, oncallUsers, nil
+		}
 	}
-
 	return 0, "", fmt.Errorf("no online users found for guild %s", guildID)
 }
 
@@ -175,8 +179,14 @@ func (dm *DiscordMetrics) GetOnlineUsers(guildID string) (int64, string, error) 
 	for result.Next() {
 		record := result.Record()
 		onlineUsersCount := record.Value().(int64)
-		onlineUsers := record.Values()["user_list"].(string)
-		return onlineUsersCount, onlineUsers, nil
+		var onlineUsers string
+		if onlineUsersCount == 0 {
+			onlineUsers = "" // This can't have a comma
+			return onlineUsersCount, onlineUsers, nil
+		} else {
+			onlineUsers = record.Values()["user_list"].(string)
+			return onlineUsersCount, onlineUsers, nil
+		}
 	}
 	return 0, "", fmt.Errorf("no online users found for guild %s", guildID)
 }
@@ -213,7 +223,6 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 		}
 		oncallUsersCount := 0
 		oncallUsers := []string{}
-		oncallUsers = append(oncallUsers, EmptyDiscord)
 		for _, member := range members {
 			if member.User.Bot {
 				continue
@@ -246,9 +255,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 				}
 			}
 		}
-		if len(onlineUsers) == 0 {
-			onlineUsers = append(onlineUsers, "No one is just a click away from having fun")
-		}
+
 		err = dm.logUsersCount(OnlineUsersMeasurement, guildID, onlineUsersCount, onlineUsers)
 		if err != nil {
 			return fmt.Errorf("error logging online users: %v", err)
