@@ -30,7 +30,6 @@ const (
 	DeafenEvent            = "deafen"
 	WebcamEvent            = "webcam"
 	StreamEvent            = "streaming"
-	EmptyDiscord           = "Empty Discord - crowded streets"
 )
 
 type DiscordMetrics struct {
@@ -149,7 +148,7 @@ func (dm *DiscordMetrics) GetOncallUsers(guildID string) (int64, string, error) 
 		oncallUsersCount := record.Value().(int64)
 		var oncallUsers string
 		if oncallUsersCount == 0 {
-			oncallUsers = "Empty Discord. Crowded streets" // This can't have a comma
+			oncallUsers = "Empty Discord. Crowded streets." // This can't have a comma
 			return oncallUsersCount, oncallUsers, nil
 		} else {
 			oncallUsers = record.Values()["user_list"].(string)
