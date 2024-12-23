@@ -81,6 +81,12 @@ func newDiscordMetricsClient(url, token, org, bucket string) *DiscordMetrics {
 func (dm *DiscordMetrics) LogVoiceEvent(s *discordgo.Session, vsu *discordgo.VoiceStateUpdate, channelID, voiceEvent string, state bool) error {
 	NewAuthenticatedDiscordMetricsClient()
 
+	// Ignore users in the ignore list
+	ignoredUsers := strings.Split(os.Getenv("DISCORD_IGNORED_USERNAMES"), ",")
+	if slices.Contains(ignoredUsers, vsu.Member.User.Username) {
+		return nil
+	}
+
 	user, err := s.User(vsu.UserID)
 	if err != nil {
 		return fmt.Errorf("error fetching user: %v", err)

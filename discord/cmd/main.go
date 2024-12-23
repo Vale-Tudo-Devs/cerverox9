@@ -41,12 +41,12 @@ func main() {
 
 	log.Println("Discord Bot is now running.")
 
-	// Launch a goroutine to update the number of users in voice channels when the bot starts
+	// Launch a goroutine to update user presence when the bot starts
 	dm := models.NewAuthenticatedDiscordMetricsClient()
 	go dm.LogUsersPresence(dg)
 
-	// Update the number of users in voice channels every 60 seconds
-	ticker := time.NewTicker(300 * time.Second)
+	// Update user presence every 60 seconds
+	ticker := time.NewTicker(60 * time.Second)
 	defer ticker.Stop()
 	go func() {
 		for {
