@@ -149,7 +149,7 @@ func (dm *DiscordMetrics) GetOncallUsers(guildID string) (int64, string, error) 
 		oncallUsersCount := record.Value().(int64)
 		var oncallUsers string
 		if oncallUsersCount == 0 {
-			oncallUsers = "Empty Discord, crowded streets" // This can't have a comma
+			oncallUsers = "Empty Discord. Crowded streets" // This can't have a comma
 		} else {
 			oncallUsers = record.Values()["user_list"].(string)
 		}
@@ -181,7 +181,7 @@ func (dm *DiscordMetrics) GetOnlineUsers(guildID string) (int64, string, error) 
 		onlineUsersCount := record.Value().(int64)
 		var onlineUsers string
 		if onlineUsersCount == 0 {
-			onlineUsers = "No one is just a click away from having fun" // This can't have a comma
+			onlineUsers = "" // This can't have a comma
 		} else {
 			onlineUsers = record.Values()["user_list"].(string)
 		}
