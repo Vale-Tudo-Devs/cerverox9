@@ -207,7 +207,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 		}
 		oncallUsersCount := 0
 		oncallUsers := []string{}
-		oncallUsers = append(oncallUsers, emptyDiscord)
+		oncallUsers = append(oncallUsers, EmptyDiscord)
 		for _, member := range members {
 			if member.User.Bot {
 				continue
