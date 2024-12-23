@@ -11,7 +11,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"github.com/vcaldo/cerverox9/discord/pkg/utils"
 )
 
 const (
@@ -100,7 +99,7 @@ func (dm *DiscordMetrics) LogVoiceEvent(s *discordgo.Session, vsu *discordgo.Voi
 		return fmt.Errorf("error fetching channel: %v", err)
 	}
 
-	dm.logVoiceEvent(vsu.UserID, user.Username, utils.UserDisplayName(vsu.Member), vsu.GuildID, channelID, channel.Name, voiceEvent, state)
+	dm.logVoiceEvent(vsu.UserID, user.Username, userDisplayName(vsu.Member), vsu.GuildID, channelID, channel.Name, voiceEvent, state)
 	return nil
 }
 
@@ -231,7 +230,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 			vs, _ := s.State.VoiceState(guildID, member.User.ID) // it errors out if the user is not in a voice channel, ignore it
 			if vs != nil && vs.ChannelID != "" {
 				oncallUsersCount++
-				oncallUsers = append(oncallUsers, utils.UserDisplayName(member))
+				oncallUsers = append(oncallUsers, userDisplayName(member))
 			}
 		}
 
@@ -250,9 +249,9 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 			}
 			presence, _ := s.State.Presence(guildID, member.User.ID) // it errors out if the user is not in a voice channel, ignore it
 			if presence != nil && presence.Status != discordgo.StatusOffline {
-				if !slices.Contains(oncallUsers, utils.UserDisplayName(member)) {
+				if !slices.Contains(oncallUsers, userDisplayName(member)) {
 					onlineUsersCount++
-					onlineUsers = append(onlineUsers, utils.UserDisplayName(member))
+					onlineUsers = append(onlineUsers, userDisplayName(member))
 				}
 			}
 		}
