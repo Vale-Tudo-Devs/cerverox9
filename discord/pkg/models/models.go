@@ -147,14 +147,14 @@ func (dm *DiscordMetrics) GetOncallUsers(guildID string) (int64, string, error) 
 	for result.Next() {
 		record := result.Record()
 		oncallUsersCount := record.Value().(int64)
+		var oncallUsers string
 		if oncallUsersCount == 0 {
-			oncallUsers := "No one is just a click away from having fun" // This can't have a comma
-			return oncallUsersCount, oncallUsers, nil
+			oncallUsers = "Empty Discord, crowded streets" // This can't have a comma
+		} else {
+			oncallUsers = record.Values()["user_list"].(string)
 		}
-		oncallUsers := record.Values()["user_list"].(string)
 		return oncallUsersCount, oncallUsers, nil
 	}
-
 	return 0, "", fmt.Errorf("no online users found for guild %s", guildID)
 }
 
@@ -179,11 +179,12 @@ func (dm *DiscordMetrics) GetOnlineUsers(guildID string) (int64, string, error) 
 	for result.Next() {
 		record := result.Record()
 		onlineUsersCount := record.Value().(int64)
+		var onlineUsers string
 		if onlineUsersCount == 0 {
-			onlineUsers := "No one is just a click away from having fun" // This can't have a comma
-			return onlineUsersCount, onlineUsers, nil
+			onlineUsers = "No one is just a click away from having fun" // This can't have a comma
+		} else {
+			onlineUsers = record.Values()["user_list"].(string)
 		}
-		onlineUsers := record.Values()["user_list"].(string)
 		return onlineUsersCount, onlineUsers, nil
 	}
 	return 0, "", fmt.Errorf("no online users found for guild %s", guildID)
