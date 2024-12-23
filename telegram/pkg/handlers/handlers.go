@@ -22,10 +22,6 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		return
 	}
 
-	// lenEmptyMessage := len(discord_models.EmptyDiscord)
-	// if len(oncallUsers) > lenEmptyMessage {
-	// 	oncallUsers = oncallUsers[lenEmptyMessage:]
-	// }
 	oncallUsersList := strings.Split(oncallUsers, ",")
 	oncallUsersListLinebreak := strings.Join(oncallUsersList, "\n")
 	onlineUsersList := strings.Split(onlineUsers, ",")
@@ -46,17 +42,14 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		discordInviteLink,
 	)
 
+	emojiMessage := "📞"
 	if oncallUsersCount == 0 {
-		b.SendMessage(ctx, &bot.SendMessageParams{
-			ChatID: update.Message.Chat.ID,
-			Text:   "🤬",
-		})
-	} else {
-		b.SendMessage(ctx, &bot.SendMessageParams{
-			ChatID: update.Message.Chat.ID,
-			Text:   "📞",
-		})
+		emojiMessage = "🤬"
 	}
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   emojiMessage,
+	})
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:             update.Message.Chat.ID,
