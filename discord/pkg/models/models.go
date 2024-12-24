@@ -236,6 +236,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 				}
 				ignoredChannels := strings.Split(os.Getenv("DISCORD_IGNORED_CHANNELS"), ",")
 				if slices.Contains(ignoredChannels, currentVoiceChannel.Name) {
+					log.Printf("Ignoring user %s in ignored channel %s", member.User.ID, currentVoiceChannel.Name)
 					continue
 				}
 
