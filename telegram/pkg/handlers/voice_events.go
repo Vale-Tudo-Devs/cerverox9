@@ -101,11 +101,12 @@ func (l *VoiceEventListener) checkNewEvents() ([]VoiceEvent, error) {
 		username, ok2 := values["username"].(string)
 		globalName, ok6 := values["user_display_name"].(string)
 		channelID, ok3 := values["channel_id"].(string)
+		channelName, ok7 := values["channel_name"].(string)
 		eventType, ok4 := values["event_type"].(string)
 		state, ok5 := record.Value().(bool)
 
 		// Skip if required fields are missing
-		if !ok1 || !ok2 || !ok3 || !ok4 || !ok5 || !ok6 {
+		if !ok1 || !ok2 || !ok3 || !ok4 || !ok5 || !ok6 || !ok7 {
 			log.Printf("Skipping record with missing fields: %+v", values)
 			continue
 		}
@@ -115,6 +116,7 @@ func (l *VoiceEventListener) checkNewEvents() ([]VoiceEvent, error) {
 			Username:       username,
 			UserGlobalName: globalName,
 			ChannelID:      channelID,
+			ChannelName:    channelName,
 			EventType:      eventType,
 			State:          state,
 		}
