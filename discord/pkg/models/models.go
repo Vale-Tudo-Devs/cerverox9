@@ -94,7 +94,6 @@ func (dm *DiscordMetrics) LogVoiceEvent(s *discordgo.Session, vsu *discordgo.Voi
 
 	channel, err := s.Channel(channelID)
 	if err != nil {
-
 		log.Println("error fetching channel:", err)
 		return fmt.Errorf("error fetching channel: %v", err)
 	}
@@ -229,6 +228,17 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 			}
 			vs, _ := s.State.VoiceState(guildID, member.User.ID) // it errors out if the user is not in a voice channel, ignore it
 			if vs != nil && vs.ChannelID != "" {
+				// Checj if the user is on an ignored channel
+				currentVoiceChannel, err := s.Channel(vs.ChannelID)
+				if err != nil {
+					log.Printf("error fetching channel for user %s: %v", member.User.ID, err)
+					continue
+				}
+				ignoredChannels := strings.Split(os.Getenv("DISCORD_IGNORED_CHANNELS"), ",")
+				if slices.Contains(ignoredChannels, currentVoiceChannel.Name) {
+					continue
+				}
+
 				oncallUsersCount++
 				oncallUsers = append(oncallUsers, userDisplayName(member))
 			}
