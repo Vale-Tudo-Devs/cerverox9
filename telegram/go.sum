@@ -30,6 +30,8 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/vcaldo/cerverox9/discord v0.0.0-20241224134651-5680ef130921 h1:DndYf0+vk7QBfB2tzimtd1Iorpm5icZLo26N/1bly/k=
 github.com/vcaldo/cerverox9/discord v0.0.0-20241224134651-5680ef130921/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
+github.com/vcaldo/cerverox9/discord v0.0.0-20241224142218-7e8dfef2c54a h1:vVhTFwPhjIiggWVqa/l0B9WDH+qvvg93kJ6ZdZ78MJA=
+github.com/vcaldo/cerverox9/discord v0.0.0-20241224142218-7e8dfef2c54a/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
 golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
 golang.org/x/crypto v0.31.0 h1:ihbySMvVjLAeSH1IbfcRTkD/iNscyz8rGzjF/E5hV6U=
 golang.org/x/crypto v0.31.0/go.mod h1:kDsLvtWBEx7MV9tJOj9bnXsPbxwJQ6csT/x4KIN4Ssk=
