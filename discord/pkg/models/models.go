@@ -239,7 +239,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 					log.Printf("Ignoring user %s in ignored channel %s", member.User.ID, currentVoiceChannel.Name)
 					continue
 				}
-
+				log.Printf("User %s is on call in channel %s", member.User.ID, currentVoiceChannel.Name)
 				oncallUsersCount++
 				oncallUsers = append(oncallUsers, userDisplayName(member))
 			}
