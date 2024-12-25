@@ -124,7 +124,7 @@ func (dm *DiscordMetrics) logVoiceEvent(userID, username, userDisplayName, guild
 	return writeAPI.WritePoint(context.Background(), p)
 }
 
-func (dm *DiscordMetrics) GetOncallUsers(guildID string) (int64, string, error) {
+func (dm *DiscordMetrics) GetOncallUsers(guildID string) (guildName string, oncallUsersCount int64, oncallUsers string, error error) {
 	// query oncall users
 	query := fmt.Sprintf(`from(bucket:"%s")
 		|> range(start: -10m)
@@ -138,26 +138,27 @@ func (dm *DiscordMetrics) GetOncallUsers(guildID string) (int64, string, error) 
 	queryAPI := dm.Client.QueryAPI(dm.Org)
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
-		return 0, "", fmt.Errorf("error querying for oncall users: %v", err)
+		return "", 0, "", fmt.Errorf("error querying for oncall users: %v", err)
 	}
 	defer result.Close()
 
 	for result.Next() {
 		record := result.Record()
+		guildName := record.Values()["guild_name"].(string)
 		oncallUsersCount := record.Value().(int64)
 		var oncallUsers string
 		if oncallUsersCount == 0 {
 			oncallUsers = "Empty Discord. Crowded streets." // This can't have a comma
-			return oncallUsersCount, oncallUsers, nil
+			return guildName, oncallUsersCount, oncallUsers, nil
 		} else {
 			oncallUsers = record.Values()["user_list"].(string)
-			return oncallUsersCount, oncallUsers, nil
+			return guildName, oncallUsersCount, oncallUsers, nil
 		}
 	}
-	return 0, "", fmt.Errorf("no online users found for guild %s", guildID)
+	return "", 0, "", fmt.Errorf("no online users found for guild %s", guildID)
 }
 
-func (dm *DiscordMetrics) GetOnlineUsers(guildID string) (int64, string, error) {
+func (dm *DiscordMetrics) GetOnlineUsers(guildID string) (guildName string, onlineUsersCount int64, onlineUsers string, error error) {
 	// query online users
 	query2 := fmt.Sprintf(`from(bucket:"%s")
 		|> range(start: -10m)
@@ -171,32 +172,34 @@ func (dm *DiscordMetrics) GetOnlineUsers(guildID string) (int64, string, error) 
 	queryAPI := dm.Client.QueryAPI(dm.Org)
 	result, err := queryAPI.Query(context.Background(), query2)
 	if err != nil {
-		return 0, "", fmt.Errorf("error querying for online users: %v", err)
+		return "", 0, "", fmt.Errorf("error querying for online users: %v", err)
 	}
 	defer result.Close()
 
 	for result.Next() {
 		record := result.Record()
+		guildName := record.Values()["guild_name"].(string)
 		onlineUsersCount := record.Value().(int64)
 		var onlineUsers string
 		if onlineUsersCount == 0 {
 			onlineUsers = "" // This can't have a comma
-			return onlineUsersCount, onlineUsers, nil
+			return guildName, onlineUsersCount, onlineUsers, nil
 		} else {
 			onlineUsers = record.Values()["user_list"].(string)
-			return onlineUsersCount, onlineUsers, nil
+			return guildName, onlineUsersCount, onlineUsers, nil
 		}
 	}
-	return 0, "", fmt.Errorf("no online users found for guild %s", guildID)
+	return "", 0, "", fmt.Errorf("no online users found for guild %s", guildID)
 }
 
-func (dm *DiscordMetrics) logUsersCount(measurementName, guildID string, userCount int, userList []string) error {
+func (dm *DiscordMetrics) logUsersCount(measurementName, guildID, guildName string, userCount int, userList []string) error {
 	writeAPI := dm.Client.WriteAPIBlocking(dm.Org, dm.Bucket)
 
 	p := influxdb2.NewPoint(measurementName,
 		map[string]string{
-			"guild_id":  guildID,
-			"user_list": strings.Join(userList, ","),
+			"guild_id":   guildID,
+			"guild_name": guildName,
+			"user_list":  strings.Join(userList, ","),
 		},
 		map[string]interface{}{
 			"user_count": userCount,
@@ -244,7 +247,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 			}
 		}
 
-		err = dm.logUsersCount(OncallUsersMeasurement, guildID, oncallUsersCount, oncallUsers)
+		err = dm.logUsersCount(OncallUsersMeasurement, guildID, guild.Name, oncallUsersCount, oncallUsers)
 		if err != nil {
 			return fmt.Errorf("error logging online users: %v", err)
 		}
@@ -266,7 +269,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 			}
 		}
 
-		err = dm.logUsersCount(OnlineUsersMeasurement, guildID, onlineUsersCount, onlineUsers)
+		err = dm.logUsersCount(OnlineUsersMeasurement, guildID, guild.Name, onlineUsersCount, onlineUsers)
 		if err != nil {
 			return fmt.Errorf("error logging online users: %v", err)
 		}
