@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -42,9 +43,15 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		discordInviteLink,
 	)
 
-	emojiMessage := "🤙"
+	var emojis = []string{
+		"🧉", "🆙", "🫂", "🥃", "🆒", "🐞", "📱", "🎙", "🪩", "🎤", "🌡", "👽", "🦬", "🎢", "📞", "☎️", "💥", "🪙", "💃", "🕺", "💬", "🔥", "🎊", "👍🏿", "🥫", "🦾", "🧽", "🥰", "🧮", "🚑", "🧻", "🚓", "🤙", "🍙", "💪",
+	}
+	var emptyEmojis = []string{
+		"🫥", "⚰️", "🦠", "🙊", "😴", "😤", "🤬", "🥶", "🧟", "🕸", "☠️", "💤", "❄️", "😶", "🤚", "😓", "😫", "💩", "🤐", "🕊", "🗝", "🤨", "👹", "👺", "🫠", "😶‍🌫️", "😵", "🙉", "🦴", "🎟", "🏴", "⛈", "🤦‍♂️", "🦟", "🦝", "🖕", "💔", "🤙",
+	}
+	emojiMessage := emojis[rand.Intn(len(emojis))]
 	if oncallUsersCount == 0 {
-		emojiMessage = "🫥"
+		emojiMessage = emptyEmojis[rand.Intn(len(emptyEmojis))]
 	}
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
