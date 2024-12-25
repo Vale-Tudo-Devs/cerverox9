@@ -27,14 +27,13 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	oncallUsersListLinebreak := strings.Join(oncallUsersList, "\n")
 	onlineUsersList := strings.Split(onlineUsers, ",")
 	onlineUsersListLinebreak := strings.Join(onlineUsersList, "\n")
-
 	discordInviteLink := os.Getenv("DISCORD_INVITE_LINK")
 
 	message := fmt.Sprintf(
-		"%s\n\n"+
-			"We have %d users having fun in the call.\n\n"+
+		"Live stats for Discord Guild %s\n\n"+
+			"We have %d users having fun in the call\n\n"+
 			"%s\n\n"+
-			"There are %d users who are one click away from having fun.\n\n"+
+			"There are %d users who are one click away from having fun\n\n"+
 			"%s\n\n"+
 			"🥳 Join the party! 🥳\n%s",
 		guildName,
