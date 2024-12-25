@@ -74,23 +74,23 @@ func VoiceEventHanlder(ctx context.Context, b *bot.Bot, event *VoiceEvent) {
 	case event.EventType == "voice" && event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s joined the call in %s", event.UserGlobalName, event.ChannelName),
+			Text:   fmt.Sprintf("%s joined %s 📞", event.UserGlobalName, event.ChannelName),
 		})
 	// User left the voice channel
 	case event.EventType == "voice" && !event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s left the call in %s", event.UserGlobalName, event.ChannelName),
+			Text:   fmt.Sprintf("%s left %s 📴", event.UserGlobalName, event.ChannelName),
 		})
 	case event.EventType == "webcam" && event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s opened the webcam 📸 in %s", event.UserGlobalName, event.ChannelName),
+			Text:   fmt.Sprintf("%s opened the webcam in %s 📸", event.UserGlobalName, event.ChannelName),
 		})
 	case event.EventType == "streaming" && event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s started streaming 📺 in %s", event.UserGlobalName, event.ChannelName),
+			Text:   fmt.Sprintf("%s started streaming in %s 📺 ", event.UserGlobalName, event.ChannelName),
 		})
 	}
 }

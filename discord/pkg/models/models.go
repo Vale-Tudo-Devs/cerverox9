@@ -218,7 +218,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 		members, err := s.GuildMembers(guildID, "", 1000)
 		if err != nil {
 			log.Printf("error fetching members for guild %s: %v", guildID, err)
-			continue
+			return fmt.Errorf("error fetching members for guild %s: %v", guildID, err)
 		}
 		oncallUsersCount := 0
 		oncallUsers := []string{}
