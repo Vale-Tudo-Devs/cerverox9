@@ -28,12 +28,6 @@ github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
-github.com/vcaldo/cerverox9/discord v0.0.0-20241224134651-5680ef130921 h1:DndYf0+vk7QBfB2tzimtd1Iorpm5icZLo26N/1bly/k=
-github.com/vcaldo/cerverox9/discord v0.0.0-20241224134651-5680ef130921/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
-github.com/vcaldo/cerverox9/discord v0.0.0-20241224142218-7e8dfef2c54a h1:vVhTFwPhjIiggWVqa/l0B9WDH+qvvg93kJ6ZdZ78MJA=
-github.com/vcaldo/cerverox9/discord v0.0.0-20241224142218-7e8dfef2c54a/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
-github.com/vcaldo/cerverox9/discord v0.0.0-20241224142312-e2fd4a7fe7e5 h1:Gp+Jy6pdRb7yxFTA3Mhc/7OzyvQvubF7ynxYSnb958E=
-github.com/vcaldo/cerverox9/discord v0.0.0-20241224142312-e2fd4a7fe7e5/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
 github.com/vcaldo/cerverox9/discord v0.0.0-20241225125930-2fe34cb989ba h1:gRm5gHNGrv6MWKVdMx3yAjjO9LWS9PfV29fqckR5YVg=
 github.com/vcaldo/cerverox9/discord v0.0.0-20241225125930-2fe34cb989ba/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
 golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
