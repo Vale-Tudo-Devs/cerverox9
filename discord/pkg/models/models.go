@@ -308,6 +308,8 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, erro
 
 	for result.Next() {
 		record := result.Record()
+		log.Printf("record: %v", record)                 // debug
+		log.Printf("record.Value(): %v", record.Value()) //	debug
 		value := record.Value().(bool)
 		timestamp := record.Time()
 
