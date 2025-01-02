@@ -119,12 +119,6 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	// Get the first word after /voicestats
 	targetUser = words[1]
 	log.Printf("targetUser: %s", targetUser)
-		b.SendMessage(ctx, &bot.SendMessageParams{
-			ChatID: update.Message.Chat.ID,
-			Text:   "Please provide a valid username",
-		})
-		return
-	}
 
 	userStats, err := stats.GetUserVoiceCallStatus(targetUser)
 	if err != nil {
