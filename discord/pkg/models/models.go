@@ -316,9 +316,11 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, erro
 
 		if state { // Join event
 			lastJoinTime = timestamp
+			log.Printf("User %s joined at %s", username, lastJoinTime)
 		} else if !lastJoinTime.IsZero() { // Leave event
 			duration := timestamp.Sub(lastJoinTime)
 			totalDuration += duration
+			log.Printf("User %s left at %s, duration: %s", username, timestamp, duration)
 			lastJoinTime = time.Time{} // Reset
 		}
 	}
