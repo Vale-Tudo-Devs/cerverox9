@@ -290,11 +290,6 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, erro
                 r["event_type"] == "voice" and
                 r["username"] == "%s"
             )
-            |> pivot(
-                rowKey: ["_time"],
-                columnKey: ["_field"],
-                valueColumn: "_value"
-            )
             |> sort(columns: ["_time"])
     `, username)
 
