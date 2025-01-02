@@ -30,7 +30,7 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	discordInviteLink := os.Getenv("DISCORD_INVITE_LINK")
 
 	message := fmt.Sprintf(
-		"Live stats for Discord Guild %s\n\n"+
+		"Live stats for Discord Server %s\n\n"+
 			"We have %d users having fun in the call\n\n"+
 			"%s\n\n"+
 			"There are %d users who are one click away from having fun\n\n"+
@@ -45,10 +45,10 @@ func StatusHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	)
 
 	var emojis = []string{
-		"🧉", "🆙", "🫂", "🥃", "🆒", "🐞", "📱", "🎙", "🪩", "🎤", "🌡", "👽", "🦬", "🎢", "📞", "☎️", "💥", "🪙", "💃", "🕺", "💬", "🔥", "🎊", "👍🏿", "🥫", "🦾", "🧽", "🥰", "🧮", "🚑", "🧻", "🚓", "🤙", "🍙", "💪", "🙏", "🤲", "🫡",
+		"🧉", "🆙", "🫂", "🥃", "🆒", "🐞", "📱", "🎙", "🪩", "🎤", "🌡", "👽", "🦬", "🎢", "📞", "☎️", "💥", "🪙", "💃", "🕺", "💬", "🔥", "🎊", "👍🏿", "🥫", "🦾", "🧽", "🥰", "🧮", "🚑", "🧻", "🫰", "🤙", "🍙", "💪", "🙏", "🤲", "🫡", "🗣", "🦷", "💅",
 	}
 	var emptyEmojis = []string{
-		"🫥", "⚰️", "🦠", "🙊", "😴", "😤", "🤬", "🥶", "🧟", "🕸", "☠️", "💤", "❄️", "😶", "🤚", "😓", "😫", "💩", "🤐", "🕊", "🗝", "🤨", "👹", "👺", "🫠", "😶‍🌫️", "😵", "🙉", "🦴", "🎟", "🏴", "⛈", "🤦‍♂️", "🦟", "🦝", "🖕", "💔", "🤙",
+		"🫥", "⚰️", "🦠", "🙊", "😴", "😤", "🤬", "🥶", "🧟", "🕸", "☠️", "💤", "❄️", "😶", "🤚", "😓", "😫", "💩", "🤐", "🕊", "🗝", "🤨", "👹", "👺", "🫠", "😶‍🌫️", "😵", "🙉", "🦴", "🎟", "🏴", "⛈", "🤦‍♂️", "🦟", "🦝", "🖕", "💔", "🫵", "🤰", "🦍",
 	}
 	emojiMessage := emojis[rand.Intn(len(emojis))]
 	if oncallUsersCount == 0 {
@@ -82,13 +82,13 @@ func VoiceEventHanlder(ctx context.Context, b *bot.Bot, event *VoiceEvent) {
 	case event.EventType == "voice" && event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s joined %s 📞", event.UserGlobalName, event.ChannelName),
+			Text:   fmt.Sprintf("%s joined %s 🏃‍♂️", event.UserGlobalName, event.ChannelName),
 		})
 	// User left the voice channel
 	case event.EventType == "voice" && !event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: chatIdInt,
-			Text:   fmt.Sprintf("%s left %s 📴", event.UserGlobalName, event.ChannelName),
+			Text:   fmt.Sprintf("%s left %s 🏃‍♂️‍➡️", event.UserGlobalName, event.ChannelName),
 		})
 	case event.EventType == "webcam" && event.State:
 		b.SendMessage(ctx, &bot.SendMessageParams{
