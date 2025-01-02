@@ -308,12 +308,13 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, erro
 
 	for result.Next() {
 		record := result.Record()
-		log.Printf("record: %v", record)                 // debug
-		log.Printf("record.Value(): %v", record.Value()) //	debug
-		value := record.Value().(bool)
+		state, ok := record.ValueByKey("state").(bool)
+		if !ok {
+			continue
+		}
 		timestamp := record.Time()
 
-		if value { // Join event
+		if state { // Join event
 			lastJoinTime = timestamp
 		} else if !lastJoinTime.IsZero() { // Leave event
 			duration := timestamp.Sub(lastJoinTime)
