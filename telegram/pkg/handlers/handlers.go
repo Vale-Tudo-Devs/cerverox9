@@ -109,7 +109,7 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	words := strings.Fields(messageText)
 	var targetUser string
 	log.Printf("words: %v", words)
-	if len(words) == 1 {
+	if len(words) == 2 {
 		// Get the first word after /voicestats
 		targetUser = words[1]
 		log.Printf("targetUser: %s", targetUser)
