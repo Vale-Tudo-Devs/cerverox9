@@ -36,7 +36,12 @@ func GetUserVoiceCallStatus(username string) (time.Duration, error) {
 		log.Fatal("DISCORD_GUILD_ID env var is required")
 	}
 
-	duration, err := dm.GetUserVoiceTime(username, guildID)
+	ignoredVoiceChannel, ok := os.LookupEnv("DISCORD_IGNORED_VOICE_TIME_COUNT_CHANNEL")
+	if !ok {
+		log.Fatal("DISCORD_IGNORED_VOICE_TIME_COUNT_CHANNEL env var is required")
+	}
+
+	duration, err := dm.GetUserVoiceTime(username, guildID, ignoredVoiceChannel)
 	if err != nil {
 		return 0, err
 	}
