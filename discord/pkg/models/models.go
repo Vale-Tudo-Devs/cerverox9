@@ -277,3 +277,48 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 	}
 	return nil
 }
+
+func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, error) {
+	// Use existing client connection
+	queryAPI := dm.Client.QueryAPI(os.Getenv("INFLUX_ORG"))
+
+	query := fmt.Sprintf(`
+        from(bucket: "discord_metrics")
+            |> range(start: -30d)
+            |> filter(fn: (r) =>
+                r["_measurement"] == "voice_events" and
+                r["event_type"] == "voice" and
+                r["username"] == "%s"
+            )
+            |> pivot(
+                rowKey: ["_time"],
+                columnKey: ["_field"],
+                valueColumn: "_value"
+            )
+            |> sort(columns: ["_time"])
+    `, username)
+
+	result, err := queryAPI.Query(context.Background(), query)
+	if err != nil {
+		return 0, fmt.Errorf("query failed: %v", err)
+	}
+
+	var totalDuration time.Duration
+	var lastJoinTime time.Time
+
+	for result.Next() {
+		record := result.Record()
+		value := record.Value().(bool)
+		timestamp := record.Time()
+
+		if value { // Join event
+			lastJoinTime = timestamp
+		} else if !lastJoinTime.IsZero() { // Leave event
+			duration := timestamp.Sub(lastJoinTime)
+			totalDuration += duration
+			lastJoinTime = time.Time{} // Reset
+		}
+	}
+
+	return totalDuration, nil
+}
