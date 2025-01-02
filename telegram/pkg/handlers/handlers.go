@@ -109,7 +109,7 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	words := strings.Fields(messageText)
 	var targetUser string
 	log.Printf("words: %v", words)
-	if len(words) < 2 {
+	if len(words) < 1 {
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: update.Message.Chat.ID,
 			Text:   "Please provide a valid username",
