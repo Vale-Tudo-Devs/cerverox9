@@ -323,5 +323,5 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, erro
 		}
 	}
 
-	return time.Duration(totalDuration.Minutes()), nil
+	return totalDuration, nil
 }
