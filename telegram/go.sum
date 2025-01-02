@@ -32,6 +32,8 @@ github.com/vcaldo/cerverox9/discord v0.0.0-20250102212324-cfc5b76673f6 h1:1ypvh9
 github.com/vcaldo/cerverox9/discord v0.0.0-20250102212324-cfc5b76673f6/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
 github.com/vcaldo/cerverox9/discord v0.0.0-20250102212736-e12c0053efd4 h1:3EroxOhLyNWF0fV0c2gc6d9PIypfySqXO339DexQz18=
 github.com/vcaldo/cerverox9/discord v0.0.0-20250102212736-e12c0053efd4/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
+github.com/vcaldo/cerverox9/discord v0.0.0-20250102214149-2c4e38e708ca h1:CPHgy5Y0lK0ZSalLsYI0q4DfRBaaBV3HyGS8tOF5Mw4=
+github.com/vcaldo/cerverox9/discord v0.0.0-20250102214149-2c4e38e708ca/go.mod h1:BAm5/M4pCRknXM91Snb2q8KqKxk6UiPE1BUwcmIy19s=
 golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
 golang.org/x/crypto v0.31.0 h1:ihbySMvVjLAeSH1IbfcRTkD/iNscyz8rGzjF/E5hV6U=
 golang.org/x/crypto v0.31.0/go.mod h1:kDsLvtWBEx7MV9tJOj9bnXsPbxwJQ6csT/x4KIN4Ssk=
