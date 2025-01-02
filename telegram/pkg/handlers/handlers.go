@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"strconv"
@@ -106,10 +105,8 @@ func VoiceEventHanlder(ctx context.Context, b *bot.Bot, event *VoiceEvent) {
 
 func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	messageText := update.Message.Text
-	log.Printf("messageText: %s", messageText) // debug
 	words := strings.Fields(messageText)
 	var targetUser string
-	log.Printf("words: %v", words) // debug
 	if len(words) < 2 {
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: update.Message.Chat.ID,
@@ -119,7 +116,6 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 	// Get the first word after /voicestats
 	targetUser = words[1]
-	log.Printf("targetUser: %s", targetUser) // debug
 
 	userStats, err := stats.GetUserVoiceCallStatus(targetUser)
 	if err != nil {
@@ -132,7 +128,7 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	message := fmt.Sprintf(
 		"📊 User stats\n\n"+
-			"Total on call time in the last 30 days for user %s: %d\n",
+			"Total on call time in the last 30 days for user %s: %s\n",
 		targetUser, userStats,
 	)
 
