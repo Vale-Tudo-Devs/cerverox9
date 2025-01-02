@@ -119,7 +119,7 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 	// Get the first word after /voicestats
 	targetUser = words[1]
-	log.Printf("targetUser: %s", targetUser)
+	log.Printf("targetUser: %s", targetUser) // debug
 
 	userStats, err := stats.GetUserVoiceCallStatus(targetUser)
 	if err != nil {
