@@ -283,21 +283,21 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username, guildId string) (time.Durat
 	queryAPI := dm.Client.QueryAPI(os.Getenv("INFLUX_ORG"))
 
 	query := fmt.Sprintf(`
-        from(bucket: "discord_metrics")
-            |> range(start: -30d)
-            |> filter(fn: (r) =>
-                r["_measurement"] == "voice_events" and
-                r["event_type"] == "voice" and
-                r["username"] == "%s" and
+		from(bucket: "discord_metrics")
+			|> range(start: %d-01-01T00:00:00Z)
+			|> filter(fn: (r) =>
+				r["_measurement"] == "voice_events" and
+				r["event_type"] == "voice" and
+				r["username"] == "%s" and
 				r.guild_id == "%s"
-            )
-            |> pivot(
-                rowKey: ["_time"],
-                columnKey: ["_field"],
-                valueColumn: "_value"
-            )
-            |> sort(columns: ["_time"])
-    `, username, guildId)
+			)
+			|> pivot(
+				rowKey: ["_time"],
+				columnKey: ["_field"],
+				valueColumn: "_value"
+			)
+			|> sort(columns: ["_time"])
+	`, time.Now().Year(), username, guildId)
 
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
