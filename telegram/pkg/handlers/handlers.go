@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"strconv"
@@ -107,9 +108,11 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	messageText := update.Message.Text
 	words := strings.Fields(messageText)
 	var targetUser string
+	log.Printf("words: %v", words)
 	if len(words) == 1 {
-		// Get the first word after /stats
+		// Get the first word after /voicestats
 		targetUser = words[1]
+		log.Printf("targetUser: %s", targetUser)
 	} else {
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: update.Message.Chat.ID,
