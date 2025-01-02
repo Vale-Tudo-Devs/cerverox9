@@ -3,6 +3,7 @@ package stats
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/vcaldo/cerverox9/discord/pkg/models"
 )
@@ -25,4 +26,15 @@ func GetVoiceCallStatus() (guildName string, oncallUsersCount int64, oncallUsers
 	}
 
 	return guildName, oncallUsersCount, oncallUsers, onlineUsersCount, onlineUsers, nil
+}
+
+func GetUserVoiceCallStatus(username string) (time.Duration, error) {
+	dm := models.NewAuthenticatedDiscordMetricsClient()
+
+	duration, err := dm.GetUserVoiceTime(username)
+	if err != nil {
+		return 0, err
+	}
+
+	return duration, nil
 }

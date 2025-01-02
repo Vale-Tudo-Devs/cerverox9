@@ -102,3 +102,39 @@ func VoiceEventHanlder(ctx context.Context, b *bot.Bot, event *VoiceEvent) {
 		})
 	}
 }
+
+func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	messageText := update.Message.Text
+	words := strings.Fields(messageText)
+	var targetUser string
+	if len(words) == 1 {
+		// Get the first word after /stats
+		targetUser = words[1]
+	} else {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "Please provide a valid username",
+		})
+		return
+	}
+
+	userStats, err := stats.GetUserVoiceCallStatus(targetUser)
+	if err != nil {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "Error fetching user stats",
+		})
+		return
+	}
+
+	message := fmt.Sprintf(
+		"📊 User stats\n\n"+
+			"Total on call time this year for %s: %d\n",
+		targetUser, userStats,
+	)
+
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   message,
+	})
+}
