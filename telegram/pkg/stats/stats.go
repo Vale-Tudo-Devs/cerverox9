@@ -30,7 +30,13 @@ func GetVoiceCallStatus() (guildName string, oncallUsersCount int64, oncallUsers
 
 func GetUserVoiceCallStatus(username string) (time.Duration, error) {
 	dm := models.NewAuthenticatedDiscordMetricsClient()
-	duration, err := dm.GetUserVoiceTime(username)
+
+	guildID, ok := os.LookupEnv("DISCORD_GUILD_ID")
+	if !ok {
+		log.Fatal("DISCORD_GUILD_ID env var is required")
+	}
+
+	duration, err := dm.GetUserVoiceTime(username, guildID)
 	if err != nil {
 		return 0, err
 	}

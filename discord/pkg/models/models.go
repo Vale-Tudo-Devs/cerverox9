@@ -278,7 +278,7 @@ func (dm *DiscordMetrics) LogUsersPresence(s *discordgo.Session) error {
 	return nil
 }
 
-func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, error) {
+func (dm *DiscordMetrics) GetUserVoiceTime(username, guildId string) (time.Duration, error) {
 	// Use existing client connection
 	queryAPI := dm.Client.QueryAPI(os.Getenv("INFLUX_ORG"))
 
@@ -288,7 +288,8 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, erro
             |> filter(fn: (r) =>
                 r["_measurement"] == "voice_events" and
                 r["event_type"] == "voice" and
-                r["username"] == "%s"
+                r["username"] == "%s" and
+				r.guild_id == "%s"
             )
             |> pivot(
                 rowKey: ["_time"],
@@ -296,7 +297,7 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, erro
                 valueColumn: "_value"
             )
             |> sort(columns: ["_time"])
-    `, username)
+    `, username, guildId)
 
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
