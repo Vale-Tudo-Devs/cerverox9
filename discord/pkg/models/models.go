@@ -284,7 +284,7 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username, guildId, ignoredVoiceChanne
 
 	query := fmt.Sprintf(`
 		from(bucket: "discord_metrics")
-			|> range(start: -30d)
+			|> range(start: %d-01-01T00:00:00Z)
 			|> filter(fn: (r) =>
 				r["_measurement"] == "voice_events" and
 				r["event_type"] == "voice" and
@@ -298,7 +298,7 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username, guildId, ignoredVoiceChanne
 				valueColumn: "_value"
 			)
 			|> sort(columns: ["_time"])
-	`, username, guildId, ignoredVoiceChannel)
+	`, time.Now().Year(), username, guildId, ignoredVoiceChannel)
 
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
