@@ -284,7 +284,7 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username, guildId string) (time.Durat
 
 	query := fmt.Sprintf(`
 		from(bucket: "discord_metrics")
-			|> range(start: %d-01-01T00:00:00Z)
+			|> range(start: -30d)
 			|> filter(fn: (r) =>
 				r["_measurement"] == "voice_events" and
 				r["event_type"] == "voice" and
@@ -297,7 +297,7 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username, guildId string) (time.Durat
 				valueColumn: "_value"
 			)
 			|> sort(columns: ["_time"])
-	`, time.Now().Year(), username, guildId)
+	`, username, guildId)
 
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
