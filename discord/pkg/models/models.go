@@ -284,7 +284,7 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username string) (time.Duration, erro
 
 	query := fmt.Sprintf(`
         from(bucket: "discord_metrics")
-            |> range(start: -30d)
+            |> range(start: -1d)
             |> filter(fn: (r) =>
                 r["_measurement"] == "voice_events" and
                 r["event_type"] == "voice" and
