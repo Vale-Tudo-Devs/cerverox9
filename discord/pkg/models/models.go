@@ -368,21 +368,7 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			}
 
 		}
-		// Sort by duration
-		slices.SortFunc(userRank, func(a, b string) int {
-			aParts := strings.Split(a, ": ")
-			bParts := strings.Split(b, ": ")
-			aDur, _ := time.ParseDuration(aParts[1])
-			bDur, _ := time.ParseDuration(bParts[1])
-			if aDur > bDur {
-				return -1 // Sort in descending order (highest duration first)
-			}
-			if aDur < bDur {
-				return 1
-			}
-			return 0
-		})
-
+		slices.Sort(userRank)
 		log.Printf("User Rank: %v", userRank)
 		// Write to influx
 		err = dm.logVoiceRank(guildID, guild.Name, strings.Join(userRank, ","))
