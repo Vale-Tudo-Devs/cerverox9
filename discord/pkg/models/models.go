@@ -361,14 +361,24 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			log.Printf("Fetched voice time for user %s: %v", member.User.Username, voiceTime)
 
 			if voiceTime > 0 {
-				hours := int(voiceTime.Hours())
-				minutes := int(voiceTime.Minutes()) % 60
-				voiceTimeFmt := fmt.Sprintf("%dh:%dm", hours, minutes)
-				userRank = append(userRank, fmt.Sprintf("%s: %s", member.User.Username, voiceTimeFmt))
+				userRank = append(userRank, fmt.Sprintf("%s: %s", member.User.Username, voiceTime))
 			}
 
 		}
-		slices.Sort(userRank)
+		// Sort by duration
+		slices.SortFunc(userRank, func(a, b string) int {
+			aParts := strings.Split(a, ": ")
+			bParts := strings.Split(b, ": ")
+			aDur, _ := time.ParseDuration(aParts[1])
+			bDur, _ := time.ParseDuration(bParts[1])
+			if aDur > bDur {
+				return -1 // Sort in descending order (highest duration first)
+			}
+			if aDur < bDur {
+				return 1
+			}
+			return 0
+		})
 		log.Printf("User Rank: %v", userRank)
 		// Write to influx
 		err = dm.logVoiceRank(guildID, guild.Name, strings.Join(userRank, ","))
