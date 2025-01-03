@@ -394,7 +394,8 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 		}
 
 		// Write to influx
-		err = dm.logVoiceRank(guildID, guild.Name, strings.Join(formattedRanks, ","))
+		// err = dm.logVoiceRank(guildID, guild.Name, strings.Join(formattedRanks, ","))
+		err = dm.logVoiceRank(guildID, guild.Name, formattedRanks)
 		if err != nil {
 			return fmt.Errorf("error logging voice rank: %v", err)
 		}
@@ -403,7 +404,7 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 	return nil
 }
 
-func (dm *DiscordMetrics) logVoiceRank(guildID, guildName, voiceRank string) error {
+func (dm *DiscordMetrics) logVoiceRank(guildID, guildName string, voiceRank []string) error {
 	writeAPI := dm.Client.WriteAPIBlocking(dm.Org, dm.Bucket)
 
 	p := influxdb2.NewPoint(VoiceRankMeasurement,
