@@ -43,6 +43,8 @@ func main() {
 
 	// Launch a goroutine to update user presence when the bot starts
 	dm := models.NewAuthenticatedDiscordMetricsClient()
+	defer dm.Close()
+
 	go dm.LogUsersPresence(dg)
 
 	// Update user presence every 30 seconds
@@ -55,6 +57,24 @@ func main() {
 				return
 			case <-ticker.C:
 				dm.LogUsersPresence(dg)
+			}
+		}
+	}()
+
+	// Launch a goroutine to update user rank when the bot starts
+	dm.UpdateVoiceRank(dg)
+
+	// Update user rank every 5 minutes
+	tickerRank := time.NewTicker(5 * time.Minute)
+	defer tickerRank.Stop()
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-tickerRank.C:
+				dm.UpdateVoiceRank(dg)
 			}
 		}
 	}()

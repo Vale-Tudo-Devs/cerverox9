@@ -327,3 +327,59 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username, guildId, ignoredVoiceChanne
 
 	return totalDuration, nil
 }
+
+func (dm *DiscordMetrics) Close() {
+	dm.Client.Close()
+}
+
+func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
+	guilds, err := s.UserGuilds(200, "", "", true)
+	if err != nil {
+		return fmt.Errorf("error fetching guilds: %v", err)
+	}
+
+	for _, guild := range guilds {
+		guildID := guild.ID
+		members, err := s.GuildMembers(guildID, "", 1000)
+		if err != nil {
+			log.Printf("error fetching members for guild %s: %v", guildID, err)
+			return fmt.Errorf("error fetching members for guild %s: %v", guildID, err)
+		}
+
+		for _, member := range members {
+			if member.User.Bot {
+				continue
+			}
+			voiceTime, err := dm.GetUserVoiceTime(member.User.Username, guildID, os.Getenv("DISCORD_IGNORED_VOICE_CHANNEL"))
+			if err != nil {
+				log.Printf("error fetching voice time for user %s: %v", member.User.ID, err)
+				continue
+			}
+
+			// Update user voice time
+			err = dm.updateUserVoiceTime(guildID, member.User.ID, voiceTime)
+			if err != nil {
+				log.Printf("error updating voice time for user %s: %v", member.User.ID, err)
+				continue
+			}
+		}
+	}
+	return nil
+}
+
+func (dm *DiscordMetrics) updateUserVoiceTime(guildID, userID string, voiceTime time.Duration) error {
+	writeAPI := dm.Client.WriteAPIBlocking(dm.Org, dm.Bucket)
+
+	p := influxdb2.NewPoint("voice_time",
+		map[string]string{
+			"guild_id": guildID,
+			"user_id":  userID,
+		},
+		map[string]interface{}{
+			"voice_time": voiceTime,
+		},
+		time.Now())
+	log.Printf("Writing point: %s, %s in voice_time measurement", guildID, userID)
+
+	return writeAPI.WritePoint(context.Background(), p)
+}
