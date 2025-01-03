@@ -406,6 +406,7 @@ func (dm *DiscordMetrics) logVoiceRank(guildID, guildName string, voiceRank []ra
 			"voice_rank": voiceRank,
 		},
 		time.Now())
+	log.Printf("Writing point: %s, %s, %+v in %s measurement", guildID, guildName, voiceRank, VoiceRankMeasurement)
 
 	return writeAPI.WritePoint(context.Background(), p)
 }
