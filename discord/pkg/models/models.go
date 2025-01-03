@@ -452,7 +452,7 @@ func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName, totalOncallDu
 			return "", "", "", fmt.Errorf("total_duration not found in record")
 		}
 
-		rankList, ok := values["voice_rank"].(string)
+		rankList, ok := values["_values"].(string)
 		if !ok {
 			return "", "", "", fmt.Errorf("voice_rank not found in record")
 		}
