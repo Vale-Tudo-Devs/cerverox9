@@ -137,3 +137,37 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		Text:   message,
 	})
 }
+
+func RankHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	guildName, totalDuration, rank, err := stats.GetVoiceCallRank()
+	if err != nil {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "Error fetching voice call rank",
+		})
+		return
+	}
+
+	var emojis = []string{
+		"🥇", "🏅", "🎖", "🏆", "📊", "✍️", "🍾", "🥂", "🔝",
+	}
+
+	message := fmt.Sprintf(
+		"Voice Call Rank for Discord Server %s\n\n"+
+			"Total on-call hours: %s\n\n"+
+			"%s",
+		guildName,
+		totalDuration,
+		rank,
+	)
+
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   emojis[rand.Intn(len(emojis))],
+	})
+
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   message,
+	})
+}

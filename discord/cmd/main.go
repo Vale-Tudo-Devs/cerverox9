@@ -79,18 +79,5 @@ func main() {
 		}
 	}()
 
-	// guildId, ok := os.LookupEnv("DISCORD_GUILD_ID")
-	// if !ok {
-	// 	log.Fatal("DISCORD_GUILD_ID env var is required")
-	// }
-
-	// guildName, duration, voiceRank, err := dm.GetVoiceRank(guildId)
-	// if err != nil {
-	// 	log.Println("error getting voice rank", err)
-	// 	return
-	// }
-
-	// log.Printf("Guild: %s, Duration: %s, Voice Rank: %s\n", guildName, duration, voiceRank)
-
 	select {}
 }

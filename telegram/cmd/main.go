@@ -57,5 +57,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		handlers.StatusHandler(ctx, b, update)
 	case update.Message != nil && strings.HasPrefix(update.Message.Text, "/voicestats"):
 		handlers.UserStatsHandler(ctx, b, update)
+	case update.Message != nil && update.Message.Text == "/rank":
+		handlers.RankHandler(ctx, b, update)
 	}
 }
