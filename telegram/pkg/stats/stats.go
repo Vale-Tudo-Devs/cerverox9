@@ -49,7 +49,7 @@ func GetUserVoiceCallStatus(username string) (time.Duration, error) {
 	return duration, nil
 }
 
-func GetVoiceCallRank() (guildName, totalDuration, rank string, err error) {
+func GetVoiceCallRank() (guildName, totalDuration string, rank []interface{}, err error) {
 	dm := models.NewAuthenticatedDiscordMetricsClient()
 	guildID, ok := os.LookupEnv("DISCORD_GUILD_ID")
 	if !ok {
@@ -58,7 +58,7 @@ func GetVoiceCallRank() (guildName, totalDuration, rank string, err error) {
 
 	guildName, totalOncallDuration, voiceRank, err := dm.GetVoiceRank(guildID)
 	if err != nil {
-		return "", "", "", err
+		return "", "", nil, err
 	}
 
 	return guildName, totalOncallDuration, voiceRank, nil
