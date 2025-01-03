@@ -128,8 +128,7 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	hours := int(userStats.Hours())
 	minutes := int(userStats.Minutes()) % 60
 	message := fmt.Sprintf(
-		"📊 User stats\n\n"+
-			"Total on call time this year for user %s: %dh:%dm\n",
+		"📊 Total on call time this year for user %s: %dh:%dm\n",
 		targetUser, hours, minutes,
 	)
 
