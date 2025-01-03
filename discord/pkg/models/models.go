@@ -361,7 +361,10 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			log.Printf("Fetched voice time for user %s: %v", member.User.Username, voiceTime)
 
 			if voiceTime > 0 {
-				userRank = append(userRank, fmt.Sprintf("%s: %s", member.User.Username, voiceTime))
+				hours := int(voiceTime.Hours())
+				minutes := int(voiceTime.Minutes()) % 60
+				voiceTimeFmt := fmt.Sprintf("%dh:%dm", hours, minutes)
+				userRank = append(userRank, fmt.Sprintf("%s: %s", member.User.Username, voiceTimeFmt))
 			}
 
 		}
