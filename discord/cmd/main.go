@@ -65,7 +65,7 @@ func main() {
 	dm.UpdateVoiceRank(dg)
 
 	// Update user rank every 5 minutes
-	tickerRank := time.NewTicker(5 * time.Minute)
+	tickerRank := time.NewTicker(300 * time.Second)
 	defer tickerRank.Stop()
 
 	go func() {
@@ -78,6 +78,19 @@ func main() {
 			}
 		}
 	}()
+
+	guildId, ok := os.LookupEnv("DISCORD_GUILD_ID")
+	if !ok {
+		log.Fatal("DISCORD_GUILD_ID env var is required")
+	}
+
+	guildName, voiceRank, err := dm.GetVoiceRank(guildId)
+	if err != nil {
+		log.Println("error getting voice rank", err)
+		return
+	}
+
+	log.Printf("Voice Rank for %s: %s\n", guildName, voiceRank)
 
 	select {}
 }

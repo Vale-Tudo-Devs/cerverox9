@@ -17,6 +17,7 @@ const (
 	VoiceEventsMeasurement = "voice_events"
 	OncallUsersMeasurement = "oncall_users"
 	OnlineUsersMeasurement = "online_users"
+	VoiceRankMeasurement   = "voice_time"
 	UserIdKey              = "user_id"
 	UsernameKey            = "username"
 	UserDisplayNameKey     = "user_display_name"
@@ -76,6 +77,10 @@ func newDiscordMetricsClient(url, token, org, bucket string) *DiscordMetrics {
 		Bucket: bucket,
 		Url:    url,
 	}
+}
+
+func (dm *DiscordMetrics) Close() {
+	dm.Client.Close()
 }
 
 func (dm *DiscordMetrics) LogVoiceEvent(s *discordgo.Session, vsu *discordgo.VoiceStateUpdate, channelID, voiceEvent string, state bool) error {
@@ -328,10 +333,6 @@ func (dm *DiscordMetrics) GetUserVoiceTime(username, guildId, ignoredVoiceChanne
 	return totalDuration, nil
 }
 
-func (dm *DiscordMetrics) Close() {
-	dm.Client.Close()
-}
-
 func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 	guilds, err := s.UserGuilds(200, "", "", true)
 	if err != nil {
@@ -350,7 +351,7 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			if member.User.Bot {
 				continue
 			}
-			voiceTime, err := dm.GetUserVoiceTime(member.User.Username, guildID, os.Getenv("DISCORD_IGNORED_VOICE_CHANNEL"))
+			voiceTime, err := dm.GetUserVoiceTime(member.User.Username, guildID, os.Getenv("DISCORD_IGNORED_VOICE_TIME_COUNT_CHANNEL"))
 			if err != nil {
 				log.Printf("error fetching voice time for user %s: %v", member.User.ID, err)
 				continue
@@ -358,14 +359,16 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 
 			log.Printf("Fetched voice time for user %s: %v", member.User.Username, voiceTime)
 
-			// Update user voice time
-			err = dm.updateUserVoiceTime(guildID, member.User.ID, voiceTime)
-			if err != nil {
-				log.Printf("error updating voice time for user %s: %v", member.User.ID, err)
-				continue
-			}
+			// Update user voice rank time if not empty
+			if voiceTime > 0 {
+				err = dm.updateUserVoiceTime(guildID, member.User.ID, voiceTime)
+				if err != nil {
+					log.Printf("error updating voice time for user %s: %v", member.User.ID, err)
+					continue
+				}
 
-			log.Printf("Updated voice time for user %s: %v", member.User.Username, voiceTime)
+				log.Printf("Updated voice time for user %s: %v", member.User.Username, voiceTime)
+			}
 		}
 	}
 	return nil
@@ -374,7 +377,7 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 func (dm *DiscordMetrics) updateUserVoiceTime(guildID, userID string, voiceTime time.Duration) error {
 	writeAPI := dm.Client.WriteAPIBlocking(dm.Org, dm.Bucket)
 
-	p := influxdb2.NewPoint("voice_time",
+	p := influxdb2.NewPoint(VoiceRankMeasurement,
 		map[string]string{
 			"guild_id": guildID,
 			"user_id":  userID,
@@ -383,7 +386,34 @@ func (dm *DiscordMetrics) updateUserVoiceTime(guildID, userID string, voiceTime 
 			"voice_time": voiceTime,
 		},
 		time.Now())
-	log.Printf("Writing point: %s, %s in voice_time measurement", guildID, userID)
+	log.Printf("Writing point: %s, %s in %s measurement", guildID, userID, VoiceRankMeasurement)
 
 	return writeAPI.WritePoint(context.Background(), p)
+}
+
+func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName string, voiceRank string, error error) {
+	// query voice rank
+	query := fmt.Sprintf(`from(bucket:"%s")
+		|> range(start: -10m)
+		|> filter(fn: (r) => r._measurement == "%s" and r.guild_id == "%s")
+		|> group(columns: ["guild_id"])
+		|> sort(columns: ["_time"], desc: true)
+		|> limit(n: 1)
+		|> last()`,
+		dm.Bucket, VoiceRankMeasurement, guildID)
+
+	queryAPI := dm.Client.QueryAPI(dm.Org)
+	result, err := queryAPI.Query(context.Background(), query)
+	if err != nil {
+		return "", "", fmt.Errorf("error querying for voice rank: %v", err)
+	}
+	defer result.Close()
+
+	for result.Next() {
+		record := result.Record()
+		guildName := record.Values()["guild_name"].(string)
+		voiceRank := record.Values()["voice_time"].(string)
+		return guildName, voiceRank, nil
+	}
+	return "", "", fmt.Errorf("no voice rank found for guild %s", guildID)
 }
