@@ -356,12 +356,16 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 				continue
 			}
 
+			log.Printf("Fetched voice time for user %s: %v", member.User.Username, voiceTime)
+
 			// Update user voice time
 			err = dm.updateUserVoiceTime(guildID, member.User.ID, voiceTime)
 			if err != nil {
 				log.Printf("error updating voice time for user %s: %v", member.User.ID, err)
 				continue
 			}
+
+			log.Printf("Updated voice time for user %s: %v", member.User.Username, voiceTime)
 		}
 	}
 	return nil
