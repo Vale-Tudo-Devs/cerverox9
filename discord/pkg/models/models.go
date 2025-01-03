@@ -437,7 +437,7 @@ func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName, totalOncallDu
 		record := result.Record()
 		guildName := record.Values()["guild_name"].(string)
 		totalDuration := record.Values()["total_duration"].(string)
-		rankList := record.Values()["voice_rank"].(string)
+		rankList := record.ValueByKey("voice_rank").(string)
 		return guildName, totalDuration, rankList, nil
 		log.Printf("Logged voice rank for guild %s - %s. rank list: %s. duration: %s", guildID, guildName, rankList, totalDuration)
 	}
