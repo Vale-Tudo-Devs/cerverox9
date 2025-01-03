@@ -380,6 +380,28 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			return 0
 		})
 		log.Printf("User Rank: %v", userRank)
+
+		// Create a new slice for formatted ranks
+		formattedRanks := make([]string, len(userRank))
+
+		// Format each entry
+		for i, entry := range userRank {
+			parts := strings.Split(entry, ": ")
+			username := parts[0]
+			voiceTime, _ := time.ParseDuration(parts[1])
+
+			hours := int(voiceTime.Hours())
+			minutes := int(voiceTime.Minutes()) % 60
+			voiceTimeFmt := fmt.Sprintf("%dh:%dm", hours, minutes)
+
+			formattedRanks[i] = fmt.Sprintf("%s: %s", username, voiceTimeFmt)
+		}
+
+		// Replace original userRank with formatted version
+		userRank = formattedRanks
+
+		log.Printf("Formatted User Rank: %v", userRank)
+
 		// Write to influx
 		err = dm.logVoiceRank(guildID, guild.Name, strings.Join(userRank, ","))
 		if err != nil {
