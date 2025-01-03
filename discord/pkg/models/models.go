@@ -358,10 +358,9 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 				continue
 			}
 
-			log.Printf("Fetched voice time for user %s: %v", member.User.Username, voiceTime)
-
+			userDisplayName := userDisplayName(member)
 			if voiceTime > 0 {
-				userRank = append(userRank, fmt.Sprintf("%s: %s", member.User.Username, voiceTime))
+				userRank = append(userRank, fmt.Sprintf("%s: %s", userDisplayName, voiceTime))
 			}
 
 		}
@@ -379,12 +378,9 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			}
 			return 0
 		})
-		log.Printf("User Rank: %v", userRank)
-
-		// Create a new slice for formatted ranks
-		formattedRanks := make([]string, len(userRank))
 
 		// Format each entry
+		formattedRanks := make([]string, len(userRank))
 		for i, entry := range userRank {
 			parts := strings.Split(entry, ": ")
 			username := parts[0]
@@ -397,13 +393,8 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			formattedRanks[i] = fmt.Sprintf("%s: %s", username, voiceTimeFmt)
 		}
 
-		// Replace original userRank with formatted version
-		userRank = formattedRanks
-
-		log.Printf("Formatted User Rank: %v", userRank)
-
 		// Write to influx
-		err = dm.logVoiceRank(guildID, guild.Name, strings.Join(userRank, ","))
+		err = dm.logVoiceRank(guildID, guild.Name, strings.Join(formattedRanks, ","))
 		if err != nil {
 			return fmt.Errorf("error logging voice rank: %v", err)
 		}
