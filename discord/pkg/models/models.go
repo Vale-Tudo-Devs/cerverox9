@@ -22,6 +22,7 @@ const (
 	UsernameKey            = "username"
 	UserDisplayNameKey     = "user_display_name"
 	GuildIdKey             = "guild_id"
+	GuildNameKey           = "guild_name"
 	ChannelIdKey           = "channel_id"
 	ChannelNameKey         = "channel_name"
 	EventTypeKey           = "event_type"
@@ -38,6 +39,11 @@ type DiscordMetrics struct {
 	Org    string
 	Bucket string
 	Url    string
+}
+
+type rankEntry struct {
+	name     string
+	duration time.Duration
 }
 
 func NewAuthenticatedDiscordMetricsClient() *DiscordMetrics {
@@ -347,7 +353,8 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			return fmt.Errorf("error fetching members for guild %s: %v", guildID, err)
 		}
 
-		userRank := []string{}
+		totalOncallDuration := 0 * time.Second
+		userRank := make([]rankEntry, 0)
 		for _, member := range members {
 			if member.User.Bot {
 				continue
@@ -360,42 +367,24 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 
 			userDisplayName := userDisplayName(member)
 			if voiceTime > 0 {
-				userRank = append(userRank, fmt.Sprintf("%s: %s", userDisplayName, voiceTime))
+				userRank = append(userRank, rankEntry{name: userDisplayName, duration: voiceTime})
+				totalOncallDuration += voiceTime
 			}
-
 		}
-		// Sort by duration
-		slices.SortFunc(userRank, func(a, b string) int {
-			aParts := strings.Split(a, ": ")
-			bParts := strings.Split(b, ": ")
-			aDur, _ := time.ParseDuration(aParts[1])
-			bDur, _ := time.ParseDuration(bParts[1])
-			if aDur > bDur {
-				return -1 // Sort in descending order (highest duration first)
+
+		// Sort userRank by duration (descending)
+		slices.SortFunc(userRank, func(a, b rankEntry) int {
+			if a.duration > b.duration {
+				return -1
 			}
-			if aDur < bDur {
+			if a.duration < b.duration {
 				return 1
 			}
 			return 0
 		})
 
-		// Format each entry
-		formattedRanks := make([]string, len(userRank))
-		for i, entry := range userRank {
-			parts := strings.Split(entry, ": ")
-			username := parts[0]
-			voiceTime, _ := time.ParseDuration(parts[1])
-
-			hours := int(voiceTime.Hours())
-			minutes := int(voiceTime.Minutes()) % 60
-			voiceTimeFmt := fmt.Sprintf("%dh:%dm", hours, minutes)
-
-			formattedRanks[i] = fmt.Sprintf("%s: %s", username, voiceTimeFmt)
-		}
-
 		// Write to influx
-		// err = dm.logVoiceRank(guildID, guild.Name, strings.Join(formattedRanks, ","))
-		err = dm.logVoiceRank(guildID, guild.Name, formattedRanks)
+		err = dm.logVoiceRank(guildID, guild.Name, userRank, totalOncallDuration)
 		if err != nil {
 			return fmt.Errorf("error logging voice rank: %v", err)
 		}
@@ -404,19 +393,19 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 	return nil
 }
 
-func (dm *DiscordMetrics) logVoiceRank(guildID, guildName string, voiceRank []string) error {
+func (dm *DiscordMetrics) logVoiceRank(guildID, guildName string, voiceRank []rankEntry, totalOncallDuration time.Duration) error {
 	writeAPI := dm.Client.WriteAPIBlocking(dm.Org, dm.Bucket)
 
 	p := influxdb2.NewPoint(VoiceRankMeasurement,
 		map[string]string{
-			GuildIdKey:   guildID,
-			"guild_name": guildName,
+			"guild_id":       guildID,
+			"guild_name":     guildName,
+			"total_duration": totalOncallDuration.String(),
 		},
 		map[string]interface{}{
 			"voice_rank": voiceRank,
 		},
 		time.Now())
-	log.Printf("Writing point: %s, %s in %s measurement", guildID, voiceRank, VoiceRankMeasurement)
 
 	return writeAPI.WritePoint(context.Background(), p)
 }
