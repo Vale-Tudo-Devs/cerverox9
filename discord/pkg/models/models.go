@@ -415,7 +415,7 @@ func (dm *DiscordMetrics) logVoiceRank(guildID, guildName, totalOncallDuration s
 	return writeAPI.WritePoint(context.Background(), p)
 }
 
-func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName string, voiceRank string, error error) {
+func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName, totalOncallDuration, voiceRank string, err error) {
 	// query voice rank
 	query := fmt.Sprintf(`from(bucket:"%s")
 		|> range(start: -10m)
@@ -429,15 +429,16 @@ func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName string, voiceR
 	queryAPI := dm.Client.QueryAPI(dm.Org)
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
-		return "", "", fmt.Errorf("error querying for voice rank: %v", err)
+		return "", "", "", fmt.Errorf("error querying for voice rank: %v", err)
 	}
 	defer result.Close()
 
 	for result.Next() {
 		record := result.Record()
 		guildName := record.Values()["guild_name"].(string)
+		totalOncallDuration := record.Values()["total_duration"].(string)
 		voiceRank := record.Values()["voice_rank"].(string)
-		return guildName, voiceRank, nil
+		return guildName, totalOncallDuration, voiceRank, nil
 	}
-	return "", "", fmt.Errorf("no voice rank found for guild %s", guildID)
+	return "", "", "", fmt.Errorf("no voice rank found for guild %s", guildID)
 }
