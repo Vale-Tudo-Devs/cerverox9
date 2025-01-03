@@ -435,11 +435,25 @@ func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName, totalOncallDu
 
 	for result.Next() {
 		record := result.Record()
-		guildName := record.Values()["guild_name"].(string)
-		totalDuration := record.Values()["total_duration"].(string)
-		rankList := record.ValueByKey("voice_rank").(string)
+		values := record.Values()
+
+		guildName, ok := values["guild_name"].(string)
+		if !ok {
+			return "", "", "", fmt.Errorf("guild_name not found in record")
+		}
+
+		totalDuration, ok := values["total_duration"].(string)
+		if !ok {
+			return "", "", "", fmt.Errorf("total_duration not found in record")
+		}
+
+		rankList, ok := values["voice_rank"].(string)
+		if !ok {
+			return "", "", "", fmt.Errorf("voice_rank not found in record")
+		}
+
+		log.Printf("Retrieved voice rank for guild %s - %s. rank list: %s. duration: %s", guildID, guildName, rankList, totalDuration)
 		return guildName, totalDuration, rankList, nil
-		log.Printf("Logged voice rank for guild %s - %s. rank list: %s. duration: %s", guildID, guildName, rankList, totalDuration)
 	}
 	return "", "", "", fmt.Errorf("no voice rank found for guild %s", guildID)
 }
