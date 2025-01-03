@@ -439,6 +439,9 @@ func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName, totalOncallDu
 		record := result.Record()
 		values := record.Values()
 
+		log.Printf("Record: %+v", record)
+		log.Printf("Values: %+v", values)
+
 		guildName, ok := values["guild_name"].(string)
 		if !ok {
 			return "", "", "", fmt.Errorf("guild_name not found in record")
