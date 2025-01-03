@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/go-telegram/bot v1.11.1
-	github.com/vcaldo/cerverox9/discord v0.0.0-20250103162239-cd8d9350e9e1
+	github.com/vcaldo/cerverox9/discord v0.0.0-20250103163005-cd26d46d928a
 )
 
 require (
