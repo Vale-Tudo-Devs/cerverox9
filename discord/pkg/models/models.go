@@ -347,6 +347,7 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			return fmt.Errorf("error fetching members for guild %s: %v", guildID, err)
 		}
 
+		userRank := []string{}
 		for _, member := range members {
 			if member.User.Bot {
 				continue
@@ -359,34 +360,36 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 
 			log.Printf("Fetched voice time for user %s: %v", member.User.Username, voiceTime)
 
-			// Update user voice rank time if not empty
 			if voiceTime > 0 {
-				err = dm.updateUserVoiceTime(guildID, member.User.ID, voiceTime)
-				if err != nil {
-					log.Printf("error updating voice time for user %s: %v", member.User.ID, err)
-					continue
-				}
-
-				log.Printf("Updated voice time for user %s: %v", member.User.Username, voiceTime)
+				userRank = append(userRank, fmt.Sprintf("%s: %s", member.User.Username, voiceTime))
 			}
+
 		}
+		slices.Sort(userRank)
+		log.Printf("User Rank: %v", userRank)
+		// Write to influx
+		err = dm.logVoiceRank(guildID, guild.Name, strings.Join(userRank, ","))
+		if err != nil {
+			return fmt.Errorf("error logging voice rank: %v", err)
+		}
+		log.Printf("Logged voice rank for guild %s - %s", guildID, guild.Name)
 	}
 	return nil
 }
 
-func (dm *DiscordMetrics) updateUserVoiceTime(guildID, userID string, voiceTime time.Duration) error {
+func (dm *DiscordMetrics) logVoiceRank(guildID, guildName, voiceRank string) error {
 	writeAPI := dm.Client.WriteAPIBlocking(dm.Org, dm.Bucket)
 
 	p := influxdb2.NewPoint(VoiceRankMeasurement,
 		map[string]string{
-			"guild_id": guildID,
-			"user_id":  userID,
+			GuildIdKey:   guildID,
+			"guild_name": guildName,
 		},
 		map[string]interface{}{
-			"voice_time": voiceTime,
+			"voice_rank": voiceRank,
 		},
 		time.Now())
-	log.Printf("Writing point: %s, %s in %s measurement", guildID, userID, VoiceRankMeasurement)
+	log.Printf("Writing point: %s, %s in %s measurement", guildID, voiceRank, VoiceRankMeasurement)
 
 	return writeAPI.WritePoint(context.Background(), p)
 }
@@ -412,7 +415,7 @@ func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName string, voiceR
 	for result.Next() {
 		record := result.Record()
 		guildName := record.Values()["guild_name"].(string)
-		voiceRank := record.Values()["voice_time"].(string)
+		voiceRank := record.Values()["voice_rank"].(string)
 		return guildName, voiceRank, nil
 	}
 	return "", "", fmt.Errorf("no voice rank found for guild %s", guildID)
