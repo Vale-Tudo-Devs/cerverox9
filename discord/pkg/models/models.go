@@ -367,13 +367,24 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 				userRank = append(userRank, fmt.Sprintf("%s: %s", member.User.Username, voiceTimeFmt))
 			}
 
-		}
 		// Sort by duration
 		slices.SortFunc(userRank, func(a, b string) int {
 			aParts := strings.Split(a, ": ")
 			bParts := strings.Split(b, ": ")
-			aDur, _ := time.ParseDuration(aParts[1])
-			bDur, _ := time.ParseDuration(bParts[1])
+
+			// Parse "Xh:Ym" format
+			aTime := strings.Split(aParts[1], ":")
+			bTime := strings.Split(bParts[1], ":")
+
+			// Convert to duration
+			aHours, _ := strconv.Atoi(strings.TrimSuffix(aTime[0], "h"))
+			aMins, _ := strconv.Atoi(strings.TrimSuffix(aTime[1], "m"))
+			bHours, _ := strconv.Atoi(strings.TrimSuffix(bTime[0], "h"))
+			bMins, _ := strconv.Atoi(strings.TrimSuffix(bTime[1], "m"))
+
+			aDur := time.Duration(aHours)*time.Hour + time.Duration(aMins)*time.Minute
+			bDur := time.Duration(bHours)*time.Hour + time.Duration(bMins)*time.Minute
+
 			if aDur > bDur {
 				return -1 // Sort in descending order (highest duration first)
 			}
