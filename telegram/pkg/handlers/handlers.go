@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"strconv"
@@ -141,6 +142,7 @@ func UserStatsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 func RankHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	guildName, totalDuration, rank, err := stats.GetVoiceCallRank()
 	if err != nil {
+		log.Printf("Error fetching voice call rank: %v", err)
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: update.Message.Chat.ID,
 			Text:   "Error fetching voice call rank",

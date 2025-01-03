@@ -426,6 +426,8 @@ func (dm *DiscordMetrics) GetVoiceRank(guildID string) (guildName, totalOncallDu
 		|> last()`,
 		dm.Bucket, VoiceRankMeasurement, guildID)
 
+	log.Printf("Query: %s", query)
+
 	queryAPI := dm.Client.QueryAPI(dm.Org)
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
