@@ -383,8 +383,12 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 			return 0
 		})
 
+		hours := int(totalOncallDuration.Hours())
+		minutes := int(totalOncallDuration.Minutes()) % 60
+		totalOncallDurationFmt := fmt.Sprintf("%dh:%dm", hours, minutes)
+
 		// Write to influx
-		err = dm.logVoiceRank(guildID, guild.Name, userRank, totalOncallDuration)
+		err = dm.logVoiceRank(guildID, guild.Name, totalOncallDurationFmt, userRank)
 		if err != nil {
 			return fmt.Errorf("error logging voice rank: %v", err)
 		}
@@ -393,14 +397,14 @@ func (dm *DiscordMetrics) UpdateVoiceRank(s *discordgo.Session) error {
 	return nil
 }
 
-func (dm *DiscordMetrics) logVoiceRank(guildID, guildName string, voiceRank []rankEntry, totalOncallDuration time.Duration) error {
+func (dm *DiscordMetrics) logVoiceRank(guildID, guildName, totalOncallDuration string, voiceRank []rankEntry) error {
 	writeAPI := dm.Client.WriteAPIBlocking(dm.Org, dm.Bucket)
 
 	p := influxdb2.NewPoint(VoiceRankMeasurement,
 		map[string]string{
 			"guild_id":       guildID,
 			"guild_name":     guildName,
-			"total_duration": totalOncallDuration.String(),
+			"total_duration": totalOncallDuration,
 		},
 		map[string]interface{}{
 			"voice_rank": voiceRank,
